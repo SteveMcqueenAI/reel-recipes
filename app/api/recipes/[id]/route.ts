@@ -15,7 +15,7 @@ export async function GET(
 
     const { id } = await params;
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("recipes")
       .select("*")
       .eq("id", id)
@@ -49,7 +49,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const { error } = await supabase
+    const { error } = await getSupabase()
       .from("recipes")
       .delete()
       .eq("id", id)

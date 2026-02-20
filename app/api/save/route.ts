@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Insert recipe into Supabase
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("recipes")
       .insert({
         user_id: userId,
