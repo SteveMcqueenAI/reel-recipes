@@ -1,21 +1,16 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Return null client if not configured - API routes will handle gracefully
+export const supabase = supabaseUrl && supabaseServiceKey 
+  ? createClient(supabaseUrl, supabaseServiceKey)
+  : null;
 
-export interface RecipeRow {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  ingredients: string[];
-  steps: string[];
-  cook_time: string | null;
-  prep_time: string | null;
-  servings: number | null;
-  source_url: string;
-  video_url: string | null;
-  created_at: string;
+export function getSupabase() {
+  if (!supabase) {
+    throw new Error('Supabase not configured. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
+  }
+  return supabase;
 }
