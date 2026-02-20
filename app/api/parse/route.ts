@@ -7,7 +7,7 @@ const anthropic = new Anthropic({
 
 export async function POST(req: NextRequest) {
   try {
-    const { transcript, sourceUrl } = await req.json();
+    const { transcript } = await req.json();
 
     if (!transcript) {
       return NextResponse.json(
