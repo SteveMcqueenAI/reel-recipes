@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getSupabase } from "@/lib/supabase";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
@@ -10,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { recipe, sourceUrl, videoPath } = await req.json();
+    const { recipe, sourceUrl, videoUrl } = await req.json();
 
     if (!recipe) {
       return NextResponse.json(
@@ -32,7 +35,7 @@ export async function POST(req: NextRequest) {
         cook_time: recipe.cook_time,
         servings: recipe.servings,
         source_url: sourceUrl,
-        video_url: videoPath,
+        video_url: videoUrl,
       })
       .select()
       .single();

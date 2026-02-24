@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
-import { createReadStream, existsSync } from "fs";
+import OpenAI, { toFile } from "openai";
+
+export const runtime = "nodejs";
+export const maxDuration = 60;
 
 function getOpenAI() {
   if (!process.env.OPENAI_API_KEY) {
@@ -11,25 +13,39 @@ function getOpenAI() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { audioPath } = await req.json();
+    const { videoUrl } = await req.json();
 
-    if (!audioPath) {
+    if (!videoUrl) {
       return NextResponse.json(
-        { error: "Audio path is required" },
+        { error: "Video URL is required" },
         { status: 400 }
       );
     }
 
-    if (!existsSync(audioPath)) {
+    // Download the video
+    const videoResponse = await fetch(videoUrl);
+    if (!videoResponse.ok) {
       return NextResponse.json(
-        { error: "Audio file not found" },
-        { status: 404 }
+        { error: "Failed to download video" },
+        { status: 500 }
       );
     }
 
+    const videoBuffer = await videoResponse.arrayBuffer();
+    
+    // Determine file extension from content-type or URL
+    const contentType = videoResponse.headers.get("content-type") || "";
+    let extension = "mp4";
+    if (contentType.includes("webm")) extension = "webm";
+    else if (contentType.includes("quicktime") || videoUrl.includes(".mov")) extension = "mov";
+    
+    // Create a File-like object for OpenAI
+    const file = await toFile(Buffer.from(videoBuffer), `video.${extension}`);
+
     // Transcribe using OpenAI Whisper
+    // Note: Whisper can handle video files and extracts audio automatically
     const transcription = await getOpenAI().audio.transcriptions.create({
-      file: createReadStream(audioPath),
+      file,
       model: "whisper-1",
       language: "en",
     });
@@ -40,7 +56,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Transcription error:", error);
     return NextResponse.json(
-      { error: "Failed to transcribe audio" },
+      { error: "Failed to transcribe video" },
       { status: 500 }
     );
   }
