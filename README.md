@@ -14,6 +14,10 @@ Turn Instagram and TikTok food videos into your personal recipe book. Paste a li
 - ✏️ Edit recipes after saving
 - 🖨️ Print-friendly recipe view
 - 📱 Mobile-friendly design
+- ❤️ Favorites/bookmarking
+- 🔗 Share to X, Facebook, WhatsApp, Telegram (+ native share on mobile)
+- 🌙 Dark mode with system preference detection
+- 🎨 Theme toggle (Light/Dark/System)
 
 ## Tech Stack
 
@@ -51,6 +55,7 @@ npm install
 2. Set up Supabase:
    - Create a new project at [supabase.com](https://supabase.com)
    - Run the SQL in `supabase-schema.sql` in the SQL editor
+   - Run migrations in `migrations/` folder (e.g., `001_add_favorites.sql`)
    - Copy your project URL and service key
 
 3. Set up Clerk:
