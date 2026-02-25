@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { ChefHat, Clock, Users, Plus, Loader2, Search, X } from "lucide-react";
+import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown } from "lucide-react";
 
 interface Recipe {
   id: string;
@@ -21,6 +21,7 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
 
   useEffect(() => {
     fetchRecipes();
@@ -40,16 +41,29 @@ export default function RecipesPage() {
     }
   };
 
-  // Filter recipes based on search query
+  // Filter and sort recipes
   const filteredRecipes = useMemo(() => {
-    if (!searchQuery.trim()) return recipes;
-    const query = searchQuery.toLowerCase();
-    return recipes.filter(
-      (recipe) =>
-        recipe.title.toLowerCase().includes(query) ||
-        recipe.description?.toLowerCase().includes(query)
-    );
-  }, [recipes, searchQuery]);
+    let result = recipes;
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (recipe) =>
+          recipe.title.toLowerCase().includes(query) ||
+          recipe.description?.toLowerCase().includes(query)
+      );
+    }
+    
+    // Sort by date
+    result = [...result].sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+    });
+    
+    return result;
+  }, [recipes, searchQuery, sortOrder]);
 
   return (
     <main className="min-h-screen">
@@ -77,25 +91,38 @@ export default function RecipesPage() {
           </button>
         </div>
 
-        {/* Search Bar */}
+        {/* Search Bar and Sort */}
         {recipes.length > 0 && (
-          <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search recipes..."
-              className="w-full pl-12 pr-10 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-800 bg-white"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search recipes..."
+                className="w-full pl-12 pr-10 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-800 bg-white"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="w-4 h-4 text-gray-400" />
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as "newest" | "oldest")}
+                className="px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-700 bg-white cursor-pointer"
               >
-                <X className="w-5 h-5" />
-              </button>
-            )}
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+              </select>
+            </div>
           </div>
         )}
 
@@ -110,7 +137,7 @@ export default function RecipesPage() {
               No recipes yet
             </h2>
             <p className="text-gray-500 mb-6">
-              Paste an Instagram reel URL to extract your first recipe
+              Paste an Instagram or TikTok URL to extract your first recipe
             </p>
             <button
               onClick={() => router.push("/")}
