@@ -1,13 +1,18 @@
 # Reel Recipes 🍳
 
-Turn Instagram food reels into your personal recipe book. Paste a link, get a formatted recipe.
+Turn Instagram and TikTok food videos into your personal recipe book. Paste a link, get a formatted recipe.
+
+**Live:** https://reel-recipes-tau.vercel.app
 
 ## Features
 
-- 📹 Extract video from Instagram reels
-- 🎤 Transcribe audio with OpenAI Whisper
+- 📹 Extract video from Instagram reels AND TikTok
+- 🎤 Transcribe audio with Google Gemini
 - 🤖 Parse recipes with Claude AI
 - 📚 Personal recipe book with auth
+- 🔍 Search your recipes
+- ✏️ Edit recipes after saving
+- 🖨️ Print-friendly recipe view
 - 📱 Mobile-friendly design
 
 ## Tech Stack
@@ -17,7 +22,8 @@ Turn Instagram food reels into your personal recipe book. Paste a link, get a fo
 - **Styling:** Tailwind CSS
 - **Database:** Supabase
 - **Auth:** Clerk
-- **AI:** OpenAI Whisper + Claude
+- **AI:** Google Gemini (transcription) + Claude (parsing)
+- **Video Extraction:** Apify (Instagram + TikTok scrapers)
 
 ## Prerequisites
 
