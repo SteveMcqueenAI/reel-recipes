@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, SignInButton, UserButton } from "@clerk/nextjs";
 import { ChefHat, Sparkles, BookOpen, Clock, Loader2 } from "lucide-react";
+import ThemeToggle from "@/app/components/theme-toggle";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -93,36 +94,42 @@ export default function Home() {
       <header className="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
           <ChefHat className="w-8 h-8 text-orange-500" />
-          <span className="text-xl font-bold text-gray-800">Reel Recipes</span>
+          <span className="text-xl font-bold text-gray-800 dark:text-gray-100">Reel Recipes</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {isLoaded && isSignedIn ? (
             <>
               <button
                 onClick={() => router.push("/recipes")}
-                className="text-gray-600 hover:text-orange-500 transition-colors"
+                className="text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors px-2"
               >
                 My Recipes
               </button>
+              <ThemeToggle />
               <UserButton afterSignOutUrl="/" />
             </>
           ) : isLoaded ? (
-            <SignInButton mode="modal">
-              <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
-                Sign In
-              </button>
-            </SignInButton>
-          ) : null}
+            <>
+              <ThemeToggle />
+              <SignInButton mode="modal">
+                <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                  Sign In
+                </button>
+              </SignInButton>
+            </>
+          ) : (
+            <ThemeToggle />
+          )}
         </div>
       </header>
 
       {/* Hero */}
       <section className="px-6 py-16 max-w-4xl mx-auto text-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-gray-100 mb-6">
           Turn Food Videos into{" "}
           <span className="gradient-text">Recipes</span>
         </h1>
-        <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
           Paste any Instagram or TikTok food video URL and we&apos;ll extract the recipe using AI.
           Build your personal cookbook from viral cooking videos.
         </p>
@@ -135,7 +142,7 @@ export default function Home() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Paste Instagram or TikTok URL..."
-              className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-800 bg-white"
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-800 outline-none text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800"
               disabled={loading}
             />
             <button
@@ -158,13 +165,13 @@ export default function Home() {
           </div>
           
           {!isSignedIn && isLoaded && (
-            <p className="text-sm text-gray-500 mt-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
               Sign in to start saving recipes
             </p>
           )}
           
           {status && loading && (
-            <p className="text-sm text-orange-600 mt-3 animate-pulse">
+            <p className="text-sm text-orange-600 dark:text-orange-400 mt-3 animate-pulse">
               {status}
             </p>
           )}
@@ -178,40 +185,40 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section className="px-6 py-16 bg-white">
+      <section className="px-6 py-16 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8">
           <div className="text-center p-6">
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
               <Sparkles className="w-6 h-6 text-orange-500" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               AI-Powered Extraction
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Our AI transcribes the video and extracts ingredients, steps, and cooking times automatically.
             </p>
           </div>
           
           <div className="text-center p-6">
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
               <BookOpen className="w-6 h-6 text-orange-500" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Personal Recipe Book
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               All your saved recipes in one place. Browse, search, and cook from your collection anytime.
             </p>
           </div>
           
           <div className="text-center p-6">
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
               <Clock className="w-6 h-6 text-orange-500" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Cook Time & Servings
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Know how long it takes and how many it serves before you start cooking.
             </p>
           </div>
@@ -219,7 +226,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="px-6 py-8 text-center text-gray-500 text-sm">
+      <footer className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
         <p>Built with 🍳 using Next.js, Whisper, and Claude</p>
       </footer>
     </main>

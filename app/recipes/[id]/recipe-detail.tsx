@@ -19,6 +19,9 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import ShareMenu from "@/app/components/share-menu";
+import FavoriteButton from "@/app/components/favorite-button";
+import ThemeToggle from "@/app/components/theme-toggle";
 
 interface Recipe {
   id: string;
@@ -32,6 +35,7 @@ interface Recipe {
   source_url: string;
   video_url: string;
   created_at: string;
+  is_favorite?: boolean;
 }
 
 export default function RecipeDetailPage() {
@@ -176,12 +180,13 @@ export default function RecipeDetailPage() {
   return (
     <main className="min-h-screen">
       {/* Header */}
-      <header className="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
+      <header className="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto print:hidden">
         <Link href="/" className="flex items-center gap-2">
           <ChefHat className="w-8 h-8 text-orange-500" />
-          <span className="text-xl font-bold text-gray-800">Reel Recipes</span>
+          <span className="text-xl font-bold text-gray-800 dark:text-gray-100">Reel Recipes</span>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
           <UserButton afterSignOutUrl="/" />
         </div>
       </header>
@@ -191,14 +196,14 @@ export default function RecipeDetailPage() {
         {/* Back link */}
         <Link
           href="/recipes"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-orange-500 mb-6"
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 mb-6 print:hidden"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to recipes
         </Link>
 
         {/* Recipe Header */}
-        <div className="bg-white rounded-2xl shadow-sm p-8 mb-6 print:shadow-none print:p-0">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 mb-6 print:shadow-none print:p-0 print:bg-white">
           <div className="flex justify-between items-start mb-4">
             {editing ? (
               <input
@@ -207,12 +212,12 @@ export default function RecipeDetailPage() {
                 onChange={(e) =>
                   setEditForm({ ...editForm!, title: e.target.value })
                 }
-                className="text-3xl font-bold text-gray-900 w-full border-b-2 border-orange-500 outline-none bg-transparent"
+                className="text-3xl font-bold text-gray-900 dark:text-gray-100 w-full border-b-2 border-orange-500 outline-none bg-transparent"
               />
             ) : (
-              <h1 className="text-3xl font-bold text-gray-900">{recipe.title}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{recipe.title}</h1>
             )}
-            <div className="flex items-center gap-2 print:hidden">
+            <div className="flex items-center gap-1 print:hidden">
               {editing ? (
                 <>
                   <button
@@ -230,7 +235,7 @@ export default function RecipeDetailPage() {
                   <button
                     onClick={cancelEditing}
                     disabled={saving}
-                    className="text-gray-400 hover:text-gray-600 transition-colors p-2"
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-2"
                     title="Cancel"
                   >
                     <X className="w-5 h-5" />
@@ -238,16 +243,25 @@ export default function RecipeDetailPage() {
                 </>
               ) : (
                 <>
+                  <FavoriteButton 
+                    recipeId={recipe.id} 
+                    isFavorite={recipe.is_favorite || false} 
+                  />
+                  <ShareMenu 
+                    title={recipe.title} 
+                    description={recipe.description}
+                    recipeId={recipe.id} 
+                  />
                   <button
                     onClick={handlePrint}
-                    className="text-gray-400 hover:text-orange-500 transition-colors p-2"
+                    className="text-gray-400 hover:text-orange-500 dark:text-gray-500 dark:hover:text-orange-400 transition-colors p-2"
                     title="Print recipe"
                   >
                     <Printer className="w-5 h-5" />
                   </button>
                   <button
                     onClick={startEditing}
-                    className="text-gray-400 hover:text-orange-500 transition-colors p-2"
+                    className="text-gray-400 hover:text-orange-500 dark:text-gray-500 dark:hover:text-orange-400 transition-colors p-2"
                     title="Edit recipe"
                   >
                     <Pencil className="w-5 h-5" />
@@ -255,7 +269,7 @@ export default function RecipeDetailPage() {
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="text-gray-400 hover:text-red-500 transition-colors p-2"
+                    className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors p-2"
                     title="Delete recipe"
                   >
                     {deleting ? (
@@ -275,15 +289,15 @@ export default function RecipeDetailPage() {
               onChange={(e) =>
                 setEditForm({ ...editForm!, description: e.target.value })
               }
-              className="text-gray-600 mb-6 w-full p-2 border rounded-lg outline-none focus:border-orange-500"
+              className="text-gray-600 dark:text-gray-300 mb-6 w-full p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 rounded-lg outline-none focus:border-orange-500"
               rows={2}
               placeholder="Recipe description..."
             />
           ) : (
-            <p className="text-gray-600 mb-6">{recipe.description}</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">{recipe.description}</p>
           )}
 
-          <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
             {editing ? (
               <>
                 <div className="flex items-center gap-2">
@@ -295,7 +309,7 @@ export default function RecipeDetailPage() {
                     onChange={(e) =>
                       setEditForm({ ...editForm!, prep_time: e.target.value })
                     }
-                    className="border-b border-gray-300 outline-none focus:border-orange-500 w-20 bg-transparent"
+                    className="border-b border-gray-300 dark:border-gray-600 outline-none focus:border-orange-500 w-20 bg-transparent dark:text-gray-200"
                     placeholder="15 mins"
                   />
                 </div>
@@ -308,7 +322,7 @@ export default function RecipeDetailPage() {
                     onChange={(e) =>
                       setEditForm({ ...editForm!, cook_time: e.target.value })
                     }
-                    className="border-b border-gray-300 outline-none focus:border-orange-500 w-20 bg-transparent"
+                    className="border-b border-gray-300 dark:border-gray-600 outline-none focus:border-orange-500 w-20 bg-transparent dark:text-gray-200"
                     placeholder="30 mins"
                   />
                 </div>
@@ -320,7 +334,7 @@ export default function RecipeDetailPage() {
                     onChange={(e) =>
                       setEditForm({ ...editForm!, servings: parseInt(e.target.value) || 0 })
                     }
-                    className="border-b border-gray-300 outline-none focus:border-orange-500 w-12 bg-transparent"
+                    className="border-b border-gray-300 dark:border-gray-600 outline-none focus:border-orange-500 w-12 bg-transparent dark:text-gray-200"
                     placeholder="4"
                   />
                   <span>servings</span>
@@ -353,7 +367,7 @@ export default function RecipeDetailPage() {
                 href={recipe.source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-orange-500 hover:text-orange-600 print:hidden"
+                className="flex items-center gap-2 text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 print:hidden"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span>View original</span>
@@ -364,8 +378,8 @@ export default function RecipeDetailPage() {
 
         <div className="grid md:grid-cols-3 gap-6 print:block">
           {/* Ingredients */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 print:shadow-none print:mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 print:shadow-none print:mb-6 print:bg-white">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
               Ingredients
             </h2>
             {editing ? (
@@ -376,12 +390,12 @@ export default function RecipeDetailPage() {
                       type="text"
                       value={ingredient}
                       onChange={(e) => updateIngredient(index, e.target.value)}
-                      className="flex-1 p-2 border rounded-lg outline-none focus:border-orange-500"
+                      className="flex-1 p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg outline-none focus:border-orange-500"
                       placeholder="Ingredient..."
                     />
                     <button
                       onClick={() => removeIngredient(index)}
-                      className="text-gray-400 hover:text-red-500 p-1"
+                      className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
@@ -389,7 +403,7 @@ export default function RecipeDetailPage() {
                 ))}
                 <button
                   onClick={addIngredient}
-                  className="flex items-center gap-2 text-orange-500 hover:text-orange-600 text-sm mt-2"
+                  className="flex items-center gap-2 text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 text-sm mt-2"
                 >
                   <Plus className="w-4 h-4" />
                   Add ingredient
@@ -400,7 +414,7 @@ export default function RecipeDetailPage() {
                 {recipe.ingredients.map((ingredient, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0 print:bg-gray-800" />
-                    <span className="text-gray-700">{ingredient}</span>
+                    <span className="text-gray-700 dark:text-gray-300">{ingredient}</span>
                   </li>
                 ))}
               </ul>
@@ -408,8 +422,8 @@ export default function RecipeDetailPage() {
           </div>
 
           {/* Steps */}
-          <div className="md:col-span-2 bg-white rounded-2xl shadow-sm p-6 print:shadow-none">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 print:shadow-none print:bg-white">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
               Instructions
             </h2>
             {editing ? (
@@ -422,13 +436,13 @@ export default function RecipeDetailPage() {
                     <textarea
                       value={step}
                       onChange={(e) => updateStep(index, e.target.value)}
-                      className="flex-1 p-2 border rounded-lg outline-none focus:border-orange-500"
+                      className="flex-1 p-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-lg outline-none focus:border-orange-500"
                       rows={2}
                       placeholder="Step instruction..."
                     />
                     <button
                       onClick={() => removeStep(index)}
-                      className="text-gray-400 hover:text-red-500 p-1 mt-2"
+                      className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1 mt-2"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
@@ -436,7 +450,7 @@ export default function RecipeDetailPage() {
                 ))}
                 <button
                   onClick={addStep}
-                  className="flex items-center gap-2 text-orange-500 hover:text-orange-600 text-sm mt-2"
+                  className="flex items-center gap-2 text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 text-sm mt-2"
                 >
                   <Plus className="w-4 h-4" />
                   Add step
@@ -449,7 +463,7 @@ export default function RecipeDetailPage() {
                     <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-medium print:bg-gray-800">
                       {index + 1}
                     </span>
-                    <p className="text-gray-700 pt-1">{step}</p>
+                    <p className="text-gray-700 dark:text-gray-300 pt-1">{step}</p>
                   </li>
                 ))}
               </ol>
