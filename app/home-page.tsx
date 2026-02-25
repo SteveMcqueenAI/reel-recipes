@@ -119,11 +119,11 @@ export default function Home() {
       {/* Hero */}
       <section className="px-6 py-16 max-w-4xl mx-auto text-center">
         <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-          Turn Instagram Reels into{" "}
+          Turn Food Videos into{" "}
           <span className="gradient-text">Recipes</span>
         </h1>
         <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-          Paste any Instagram food reel URL and we&apos;ll extract the recipe using AI.
+          Paste any Instagram or TikTok food video URL and we&apos;ll extract the recipe using AI.
           Build your personal cookbook from viral cooking videos.
         </p>
 
@@ -134,7 +134,7 @@ export default function Home() {
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="Paste Instagram reel URL..."
+              placeholder="Paste Instagram or TikTok URL..."
               className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-800 bg-white"
               disabled={loading}
             />

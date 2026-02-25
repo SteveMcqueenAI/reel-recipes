@@ -17,3 +17,42 @@ body {
     @apply bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent;
   }
 }
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+  }
+
+  header,
+  footer,
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  .print\\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  .print\\:p-0 {
+    padding: 0 !important;
+  }
+
+  .print\\:mb-6 {
+    margin-bottom: 1.5rem !important;
+  }
+
+  .print\\:block {
+    display: block !important;
+  }
+
+  .print\\:bg-gray-800 {
+    background-color: #1f2937 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+}

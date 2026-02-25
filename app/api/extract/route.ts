@@ -11,10 +11,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
 
-    // Validate Instagram URL
-    if (!url.includes("instagram.com")) {
+    // Validate URL - support Instagram and TikTok
+    const isInstagram = url.includes("instagram.com");
+    const isTikTok = url.includes("tiktok.com");
+
+    if (!isInstagram && !isTikTok) {
       return NextResponse.json(
-        { error: "Please provide a valid Instagram URL" },
+        { error: "Please provide a valid Instagram or TikTok URL" },
         { status: 400 }
       );
     }
@@ -27,15 +30,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Use Apify Instagram Downloader actor
-    // Actor: apilabs/instagram-downloader
-    const runInput = {
-      urls: [url],
-    };
+    // Use appropriate Apify actor based on platform
+    const actorId = isTikTok 
+      ? "clockworks~tiktok-scraper" 
+      : "apilabs~instagram-downloader";
+
+    const runInput = isTikTok 
+      ? { postURLs: [url], maxRequestsPerCrawl: 1 }
+      : { urls: [url] };
 
     // Start the actor run
     const startResponse = await fetch(
-      `https://api.apify.com/v2/acts/apilabs~instagram-downloader/runs?token=${apifyToken}`,
+      `https://api.apify.com/v2/acts/${actorId}/runs?token=${apifyToken}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -72,7 +78,7 @@ export async function POST(req: NextRequest) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       
       const statusResponse = await fetch(
-        `https://api.apify.com/v2/acts/apilabs~instagram-downloader/runs/${runId}?token=${apifyToken}`
+        `https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${apifyToken}`
       );
       
       if (statusResponse.ok) {
@@ -91,7 +97,7 @@ export async function POST(req: NextRequest) {
 
     // Get the results from the dataset
     const datasetResponse = await fetch(
-      `https://api.apify.com/v2/acts/apilabs~instagram-downloader/runs/${runId}/dataset/items?token=${apifyToken}`
+      `https://api.apify.com/v2/acts/${actorId}/runs/${runId}/dataset/items?token=${apifyToken}`
     );
 
     if (!datasetResponse.ok) {
@@ -110,11 +116,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Find video URL in the results
+    // Find video URL in the results (handle different response formats)
     const item = results[0];
-    const videoUrl = item.videoUrl || item.video_url || item.videoUrl || 
-                     (item.media && item.media[0]?.videoUrl) ||
-                     (item.videos && item.videos[0]?.url);
+    let videoUrl: string | undefined;
+
+    if (isTikTok) {
+      // TikTok scraper response format
+      videoUrl = item.videoUrl || 
+                 item.videoPlayAddr ||
+                 item.videoMeta?.downloadAddr ||
+                 item.video?.playAddr;
+    } else {
+      // Instagram downloader response format
+      videoUrl = item.videoUrl || item.video_url || 
+                 (item.media && item.media[0]?.videoUrl) ||
+                 (item.videos && item.videos[0]?.url);
+    }
 
     if (!videoUrl) {
       console.error("No video URL in results:", JSON.stringify(item));

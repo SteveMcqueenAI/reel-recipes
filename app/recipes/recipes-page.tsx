@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { ChefHat, Clock, Users, Plus, Loader2 } from "lucide-react";
+import { ChefHat, Clock, Users, Plus, Loader2, Search, X } from "lucide-react";
 
 interface Recipe {
   id: string;
@@ -20,6 +20,7 @@ export default function RecipesPage() {
   const router = useRouter();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchRecipes();
@@ -39,6 +40,17 @@ export default function RecipesPage() {
     }
   };
 
+  // Filter recipes based on search query
+  const filteredRecipes = useMemo(() => {
+    if (!searchQuery.trim()) return recipes;
+    const query = searchQuery.toLowerCase();
+    return recipes.filter(
+      (recipe) =>
+        recipe.title.toLowerCase().includes(query) ||
+        recipe.description?.toLowerCase().includes(query)
+    );
+  }, [recipes, searchQuery]);
+
   return (
     <main className="min-h-screen">
       {/* Header */}
@@ -54,7 +66,7 @@ export default function RecipesPage() {
 
       {/* Content */}
       <section className="px-6 py-8 max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <h1 className="text-3xl font-bold text-gray-900">My Recipe Book</h1>
           <button
             onClick={() => router.push("/")}
@@ -64,6 +76,28 @@ export default function RecipesPage() {
             Add Recipe
           </button>
         </div>
+
+        {/* Search Bar */}
+        {recipes.length > 0 && (
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search recipes..."
+              className="w-full pl-12 pr-10 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-gray-800 bg-white"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        )}
 
         {loading ? (
           <div className="flex justify-center py-16">
@@ -85,9 +119,25 @@ export default function RecipesPage() {
               Add Your First Recipe
             </button>
           </div>
+        ) : filteredRecipes.length === 0 && searchQuery ? (
+          <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
+            <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">
+              No recipes found
+            </h2>
+            <p className="text-gray-500 mb-6">
+              Try a different search term
+            </p>
+            <button
+              onClick={() => setSearchQuery("")}
+              className="text-orange-500 hover:text-orange-600 font-medium"
+            >
+              Clear search
+            </button>
+          </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recipes.map((recipe) => (
+            {filteredRecipes.map((recipe) => (
               <Link
                 key={recipe.id}
                 href={`/recipes/${recipe.id}`}
