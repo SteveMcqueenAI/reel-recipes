@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth, SignInButton, UserButton } from "@clerk/nextjs";
 import { ChefHat, Sparkles, Loader2, Globe, FolderOpen, Calendar, ShoppingCart, Scale, Star } from "lucide-react";
 import ThemeToggle from "@/app/components/theme-toggle";
+import RecentlyViewed from "@/app/components/recently-viewed";
+import CookingStats from "@/app/components/cooking-stats";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -223,6 +225,12 @@ export default function Home() {
           )}
         </form>
       </section>
+
+      {/* Recently Viewed */}
+      {isSignedIn && <RecentlyViewed />}
+
+      {/* Cooking Stats */}
+      {isSignedIn && <CookingStats />}
 
       {/* How It Works */}
       <section className="px-6 py-16 bg-white dark:bg-gray-800">

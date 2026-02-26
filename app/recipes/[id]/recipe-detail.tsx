@@ -29,6 +29,7 @@ import CookCounter from "@/app/components/cook-counter";
 import NotesSection from "@/app/components/notes-section";
 import ThemeToggle from "@/app/components/theme-toggle";
 import { scaleIngredient } from "@/lib/ingredients";
+import { addRecentlyViewed } from "@/lib/recently-viewed";
 
 interface Recipe {
   id: string;
@@ -66,6 +67,13 @@ export default function RecipeDetailPage() {
       if (res.ok) {
         const data = await res.json();
         setRecipe(data.recipe);
+        addRecentlyViewed({
+          id: data.recipe.id,
+          title: data.recipe.title,
+          description: data.recipe.description,
+          cook_time: data.recipe.cook_time,
+          tags: data.recipe.tags,
+        });
       } else {
         router.push("/recipes");
       }
@@ -138,7 +146,7 @@ export default function RecipeDetailPage() {
   };
 
   const handlePrint = () => {
-    window.print();
+    window.open(`/recipes/${params.id}/print`, "_blank");
   };
 
   const updateIngredient = (index: number, value: string) => {
