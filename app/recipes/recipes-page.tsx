@@ -248,7 +248,7 @@ export default function RecipesPage() {
               No recipes yet
             </h2>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              Paste an Instagram or TikTok URL to extract your first recipe
+              Paste any recipe URL or food video link to add your first recipe
             </p>
             <button
               onClick={() => router.push("/")}
