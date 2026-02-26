@@ -6,6 +6,8 @@ import {
   Copy,
   Check,
   X,
+  Download,
+  Loader2,
 } from "lucide-react";
 
 interface ShareMenuProps {
@@ -17,6 +19,7 @@ interface ShareMenuProps {
 export default function ShareMenu({ title, description, recipeId }: ShareMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const shareUrl = typeof window !== "undefined" 
@@ -88,6 +91,27 @@ export default function ShareMenu({ title, description, recipeId }: ShareMenuPro
     setIsOpen(false);
   };
 
+  const downloadImageCard = async () => {
+    setDownloading(true);
+    try {
+      const res = await fetch(`/api/og/${recipeId}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase()}-recipe.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setIsOpen(false);
+    } catch (err) {
+      console.error("Failed to download image card:", err);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="relative" ref={menuRef}>
       <button
@@ -128,6 +152,21 @@ export default function ShareMenu({ title, description, recipeId }: ShareMenuPro
             )}
             <span className="text-gray-700 dark:text-gray-200">
               {copied ? "Link copied!" : "Copy link"}
+            </span>
+          </button>
+
+          <button
+            onClick={downloadImageCard}
+            disabled={downloading}
+            className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            {downloading ? (
+              <Loader2 className="w-5 h-5 text-gray-500 dark:text-gray-400 animate-spin" />
+            ) : (
+              <Download className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            )}
+            <span className="text-gray-700 dark:text-gray-200">
+              {downloading ? "Generating..." : "Download image card"}
             </span>
           </button>
 
