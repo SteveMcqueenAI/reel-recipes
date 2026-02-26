@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, SignInButton, UserButton } from "@clerk/nextjs";
-import { ChefHat, Sparkles, BookOpen, Clock, Loader2, Globe } from "lucide-react";
+import { ChefHat, Sparkles, Loader2, Globe, FolderOpen, Calendar, ShoppingCart, Scale, Star } from "lucide-react";
 import ThemeToggle from "@/app/components/theme-toggle";
 
 export default function Home() {
@@ -224,43 +224,116 @@ export default function Home() {
         </form>
       </section>
 
-      {/* Features */}
+      {/* How It Works */}
       <section className="px-6 py-16 bg-white dark:bg-gray-800">
-        <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8">
-          <div className="text-center p-6">
-            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Globe className="w-6 h-6 text-orange-500" />
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 text-center mb-12">
+            How It Works
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-14 h-14 bg-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl font-bold">1</div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Paste a Link</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Drop any recipe URL — food blogs, AllRecipes, Instagram reels, TikTok videos, or any recipe site.
+              </p>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              Import From Anywhere
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Paste a URL from AllRecipes, BBC Good Food, Instagram, TikTok, or any recipe site. We handle the rest.
-            </p>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl font-bold">2</div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">AI Extracts It</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Our AI reads the page or transcribes the video, then pulls out ingredients, steps, cook times, and tags.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl font-bold">3</div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Cook & Organize</h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Scale servings, plan meals, generate shopping lists, rate recipes, and build your personal cookbook.
+              </p>
+            </div>
           </div>
-          
-          <div className="text-center p-6">
-            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-6 h-6 text-orange-500" />
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="px-6 py-16">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 text-center mb-12">
+            Everything You Need to Cook
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Globe className="w-6 h-6 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Import From Anywhere
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Recipe sites, food blogs, Instagram reels, TikTok videos — paste the URL and we handle the rest.
+              </p>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              Personal Recipe Book
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              All your saved recipes in one place. Browse, search, and cook from your collection anytime.
-            </p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-6 h-6 text-orange-500" />
+            
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Scale className="w-6 h-6 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Scale Recipes
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Adjust servings up or down. Ingredients recalculate automatically — no mental math needed.
+              </p>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              Cook Time & Servings
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Know how long it takes and how many it serves before you start cooking.
-            </p>
+            
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Calendar className="w-6 h-6 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Meal Planner
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Drag and drop recipes into a weekly calendar. Plan breakfast, lunch, dinner, and snacks.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <ShoppingCart className="w-6 h-6 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Shopping List
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Select recipes and generate a consolidated ingredient list. Smart grouping, check items off as you shop.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <FolderOpen className="w-6 h-6 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Collections
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Organize recipes into custom folders. Weeknight dinners, holiday baking, meal prep — your way.
+              </p>
+            </div>
+
+            <div className="text-center p-6">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Star className="w-6 h-6 text-orange-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Rate & Track
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Rate recipes, count how many times you&apos;ve cooked them, and add personal notes for next time.
+              </p>
+            </div>
           </div>
         </div>
       </section>

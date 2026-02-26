@@ -8,8 +8,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Reel Recipes - Save Recipes from Instagram Reels",
-  description: "Extract and save recipes from Instagram food reels. Paste a link, get a formatted recipe.",
+  title: "Reel Recipes - Turn Food Videos & URLs into Recipes",
+  description: "Paste any recipe URL or food video link and AI extracts the recipe. Import from AllRecipes, BBC Good Food, Instagram, TikTok, and thousands more. Scale servings, plan meals, generate shopping lists.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
