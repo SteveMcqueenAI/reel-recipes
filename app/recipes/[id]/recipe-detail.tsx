@@ -24,6 +24,9 @@ import {
 import ShareMenu from "@/app/components/share-menu";
 import FavoriteButton from "@/app/components/favorite-button";
 import AddToCollectionModal from "@/app/components/add-to-collection-modal";
+import StarRating from "@/app/components/star-rating";
+import CookCounter from "@/app/components/cook-counter";
+import NotesSection from "@/app/components/notes-section";
 import ThemeToggle from "@/app/components/theme-toggle";
 import { scaleIngredient } from "@/lib/ingredients";
 
@@ -41,6 +44,10 @@ interface Recipe {
   created_at: string;
   is_favorite?: boolean;
   tags?: string[];
+  notes?: string;
+  rating?: number | null;
+  cook_count?: number;
+  last_cooked_at?: string | null;
 }
 
 export default function RecipeDetailPage() {
@@ -499,6 +506,50 @@ export default function RecipeDetailPage() {
               </a>
             )}
           </div>
+        </div>
+
+        {/* Rating, Cook Counter & Notes */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 mb-6 print:shadow-none print:bg-white">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Rating:</span>
+              <StarRating
+                rating={recipe.rating ?? null}
+                onRate={async (newRating) => {
+                  const rating = newRating === 0 ? null : newRating;
+                  try {
+                    const res = await fetch(`/api/recipes/${recipe.id}`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ rating }),
+                    });
+                    if (res.ok) {
+                      setRecipe({ ...recipe, rating });
+                    }
+                  } catch (err) {
+                    console.error("Failed to save rating:", err);
+                  }
+                }}
+              />
+            </div>
+            <div className="sm:border-l sm:border-gray-200 sm:dark:border-gray-700 sm:pl-4">
+              <CookCounter
+                recipeId={recipe.id}
+                cookCount={recipe.cook_count ?? 0}
+                lastCookedAt={recipe.last_cooked_at ?? null}
+                onUpdate={(count, lastCooked) => {
+                  setRecipe({ ...recipe, cook_count: count, last_cooked_at: lastCooked });
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Notes */}
+          <NotesSection
+            recipeId={recipe.id}
+            initialNotes={recipe.notes ?? ""}
+            onSave={(notes) => setRecipe({ ...recipe, notes })}
+          />
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 print:block">

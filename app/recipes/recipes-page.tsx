@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag, FolderOpen, Calendar, ShoppingCart } from "lucide-react";
+import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag, FolderOpen, Calendar, ShoppingCart, Star, Flame } from "lucide-react";
 import FavoriteButton from "@/app/components/favorite-button";
 import ThemeToggle from "@/app/components/theme-toggle";
 
@@ -18,6 +18,8 @@ interface Recipe {
   created_at: string;
   is_favorite?: boolean;
   tags?: string[];
+  rating?: number | null;
+  cook_count?: number;
 }
 
 export default function RecipesPage() {
@@ -329,6 +331,19 @@ export default function RecipesPage() {
                       </div>
                     )}
                     <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                      {recipe.rating && recipe.rating > 0 && (
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: recipe.rating }).map((_, i) => (
+                            <Star key={i} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                          ))}
+                        </div>
+                      )}
+                      {recipe.cook_count && recipe.cook_count > 0 && (
+                        <div className="flex items-center gap-1">
+                          <Flame className="w-3.5 h-3.5 text-orange-400" />
+                          <span>{recipe.cook_count}×</span>
+                        </div>
+                      )}
                       {recipe.cook_time && (
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
