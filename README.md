@@ -20,6 +20,8 @@ Turn Instagram and TikTok food videos into your personal recipe book. Paste a li
 - 🔖 Filter recipes by tags (Pasta, Dessert, Quick Meals, etc.)
 - 🌙 Dark mode with system preference detection
 - 🎨 Theme toggle (Light/Dark/System)
+- 📅 Meal planner — drag recipes into a weekly calendar (breakfast/lunch/dinner/snack)
+- 📂 Collections — organize recipes into custom folders
 
 ## Tech Stack
 
