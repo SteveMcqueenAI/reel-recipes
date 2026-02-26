@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag, FolderOpen, Calendar } from "lucide-react";
+import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag, FolderOpen, Calendar, ShoppingCart } from "lucide-react";
 import FavoriteButton from "@/app/components/favorite-button";
 import ThemeToggle from "@/app/components/theme-toggle";
 
@@ -126,6 +126,13 @@ export default function RecipesPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">My Recipe Book</h1>
           <div className="flex items-center gap-2">
+            <Link
+              href="/shopping-list"
+              className="border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              Shopping List
+            </Link>
             <Link
               href="/meal-planner"
               className="border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"

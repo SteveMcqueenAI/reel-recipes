@@ -25,6 +25,7 @@ import ShareMenu from "@/app/components/share-menu";
 import FavoriteButton from "@/app/components/favorite-button";
 import AddToCollectionModal from "@/app/components/add-to-collection-modal";
 import ThemeToggle from "@/app/components/theme-toggle";
+import { scaleIngredient } from "@/lib/ingredients";
 
 interface Recipe {
   id: string;
@@ -171,6 +172,20 @@ export default function RecipeDetailPage() {
 
   const [newTag, setNewTag] = useState("");
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const [scaledServings, setScaledServings] = useState<number | null>(null);
+
+  const scaleFactor =
+    scaledServings && recipe?.servings
+      ? scaledServings / recipe.servings
+      : 1;
+
+  const adjustServings = (delta: number) => {
+    const current = scaledServings ?? recipe?.servings ?? 1;
+    const next = Math.max(1, current + delta);
+    setScaledServings(next);
+  };
+
+  const resetServings = () => setScaledServings(null);
 
   const addTag = () => {
     if (!editForm || !newTag.trim()) return;
@@ -443,7 +458,31 @@ export default function RecipeDetailPage() {
                 {recipe.servings > 0 && (
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4" />
-                    <span>{recipe.servings} servings</span>
+                    <button
+                      onClick={() => adjustServings(-1)}
+                      className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-colors print:hidden"
+                      aria-label="Decrease servings"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <span className={scaledServings ? "font-semibold text-orange-500" : ""}>
+                      {scaledServings ?? recipe.servings} servings
+                    </span>
+                    <button
+                      onClick={() => adjustServings(1)}
+                      className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-colors print:hidden"
+                      aria-label="Increase servings"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                    {scaledServings && (
+                      <button
+                        onClick={resetServings}
+                        className="text-xs text-gray-400 hover:text-orange-500 dark:text-gray-500 dark:hover:text-orange-400 transition-colors print:hidden"
+                      >
+                        reset
+                      </button>
+                    )}
                   </div>
                 )}
               </>
@@ -500,7 +539,11 @@ export default function RecipeDetailPage() {
                 {recipe.ingredients.map((ingredient, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0 print:bg-gray-800" />
-                    <span className="text-gray-700 dark:text-gray-300">{ingredient}</span>
+                    <span className={`text-gray-700 dark:text-gray-300 ${scaleFactor !== 1 ? "font-medium" : ""}`}>
+                      {scaleFactor !== 1
+                        ? scaleIngredient(ingredient, scaleFactor)
+                        : ingredient}
+                    </span>
                   </li>
                 ))}
               </ul>

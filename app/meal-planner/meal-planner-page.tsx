@@ -9,16 +9,11 @@ import {
   ChevronRight,
   Calendar,
   Plus,
-  X,
-  Search,
   Loader2,
-  UtensilsCrossed,
   Coffee,
   Sun,
   Moon,
   Cookie,
-  GripVertical,
-  Trash2,
 } from "lucide-react";
 import ThemeToggle from "@/app/components/theme-toggle";
 import {
@@ -107,7 +102,7 @@ export default function MealPlannerPage() {
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeRecipe, setActiveRecipe] = useState<Recipe | null>(null);
-  const [draggedMealPlan, setDraggedMealPlan] = useState<MealPlan | null>(null);
+  const [, setDraggedMealPlan] = useState<MealPlan | null>(null);
 
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
   const startDate = formatDate(weekDates[0]);
