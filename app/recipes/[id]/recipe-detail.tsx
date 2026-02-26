@@ -19,9 +19,11 @@ import {
   Plus,
   Minus,
   Tag,
+  Bookmark,
 } from "lucide-react";
 import ShareMenu from "@/app/components/share-menu";
 import FavoriteButton from "@/app/components/favorite-button";
+import AddToCollectionModal from "@/app/components/add-to-collection-modal";
 import ThemeToggle from "@/app/components/theme-toggle";
 
 interface Recipe {
@@ -168,6 +170,7 @@ export default function RecipeDetailPage() {
   };
 
   const [newTag, setNewTag] = useState("");
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   const addTag = () => {
     if (!editForm || !newTag.trim()) return;
@@ -267,6 +270,13 @@ export default function RecipeDetailPage() {
                     recipeId={recipe.id} 
                     isFavorite={recipe.is_favorite || false} 
                   />
+                  <button
+                    onClick={() => setShowCollectionModal(true)}
+                    className="text-gray-400 hover:text-orange-500 dark:text-gray-500 dark:hover:text-orange-400 transition-colors p-2"
+                    title="Save to collection"
+                  >
+                    <Bookmark className="w-5 h-5" />
+                  </button>
                   <ShareMenu 
                     title={recipe.title} 
                     description={recipe.description}
@@ -547,6 +557,13 @@ export default function RecipeDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* Add to Collection Modal */}
+      <AddToCollectionModal
+        recipeId={recipe.id}
+        isOpen={showCollectionModal}
+        onClose={() => setShowCollectionModal(false)}
+      />
     </main>
   );
 }
