@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag, FolderOpen, Calendar, ShoppingCart, Star, Flame, Download } from "lucide-react";
+import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag, FolderOpen, Calendar, ShoppingCart, Star, Flame, Download, Settings, UtensilsCrossed } from "lucide-react";
 import FavoriteButton from "@/app/components/favorite-button";
 import ThemeToggle from "@/app/components/theme-toggle";
 import { getRecipeEmoji } from "@/lib/tag-emoji";
@@ -130,6 +130,20 @@ export default function RecipesPage() {
           <span className="text-xl font-bold text-gray-800 dark:text-gray-100">Reel Recipes</span>
         </Link>
         <div className="flex items-center gap-2">
+          <Link
+            href="/search-by-ingredient"
+            className="text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors px-2"
+            title="Search by Ingredient"
+          >
+            <UtensilsCrossed className="w-5 h-5" />
+          </Link>
+          <Link
+            href="/settings"
+            className="text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors px-2"
+            title="Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </Link>
           <ThemeToggle />
           <UserButton afterSignOutUrl="/" />
         </div>

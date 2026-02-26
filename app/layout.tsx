@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "./components/theme-provider";
+import { PreferencesProvider } from "./components/preferences-context";
 import ServiceWorkerRegister from "./components/sw-register";
 import "./globals.css";
 
@@ -37,8 +38,10 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-orange-50 dark:bg-gray-900 min-h-screen transition-colors`}>
         <ThemeProvider>
-          <ServiceWorkerRegister />
-          {children}
+          <PreferencesProvider>
+            <ServiceWorkerRegister />
+            {children}
+          </PreferencesProvider>
         </ThemeProvider>
       </body>
     </html>
