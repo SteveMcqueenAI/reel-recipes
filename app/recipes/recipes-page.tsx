@@ -4,9 +4,10 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag, FolderOpen, Calendar, ShoppingCart, Star, Flame } from "lucide-react";
+import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag, FolderOpen, Calendar, ShoppingCart, Star, Flame, Download } from "lucide-react";
 import FavoriteButton from "@/app/components/favorite-button";
 import ThemeToggle from "@/app/components/theme-toggle";
+import { getRecipeEmoji } from "@/lib/tag-emoji";
 
 interface Recipe {
   id: string;
@@ -27,7 +28,8 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "rating" | "most-cooked" | "a-z">("newest");
+  const [exporting, setExporting] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
@@ -89,11 +91,21 @@ export default function RecipesPage() {
       );
     }
     
-    // Sort by date
+    // Sort
     result = [...result].sort((a, b) => {
-      const dateA = new Date(a.created_at).getTime();
-      const dateB = new Date(b.created_at).getTime();
-      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+      switch (sortOrder) {
+        case "oldest":
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "rating":
+          return (b.rating || 0) - (a.rating || 0);
+        case "most-cooked":
+          return (b.cook_count || 0) - (a.cook_count || 0);
+        case "a-z":
+          return a.title.localeCompare(b.title);
+        case "newest":
+        default:
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
     });
     
     return result;
@@ -126,7 +138,16 @@ export default function RecipesPage() {
       {/* Content */}
       <section className="px-6 py-8 max-w-6xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">My Recipe Book</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">My Recipe Book</h1>
+            {recipes.length > 0 && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {filteredRecipes.length === recipes.length
+                  ? `${recipes.length} recipe${recipes.length !== 1 ? "s" : ""}`
+                  : `${filteredRecipes.length} of ${recipes.length} recipes`}
+              </p>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <Link
               href="/shopping-list"
@@ -149,6 +170,31 @@ export default function RecipesPage() {
               <FolderOpen className="w-5 h-5" />
               Collections
             </Link>
+            <button
+              onClick={async () => {
+                setExporting(true);
+                try {
+                  const res = await fetch("/api/export");
+                  if (res.ok) {
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `reel-recipes-export-${new Date().toISOString().slice(0, 10)}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }
+                } finally {
+                  setExporting(false);
+                }
+              }}
+              disabled={exporting || recipes.length === 0}
+              className="border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+              title="Export all recipes as JSON"
+            >
+              {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+              Export
+            </button>
             <button
               onClick={() => router.push("/")}
               className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
@@ -199,11 +245,14 @@ export default function RecipesPage() {
                 <ArrowUpDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <select
                   value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value as "newest" | "oldest")}
+                  onChange={(e) => setSortOrder(e.target.value as typeof sortOrder)}
                   className="px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-800 outline-none text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 cursor-pointer"
                 >
                   <option value="newest">Newest first</option>
                   <option value="oldest">Oldest first</option>
+                  <option value="rating">Highest rated</option>
+                  <option value="most-cooked">Most cooked</option>
+                  <option value="a-z">A → Z</option>
                 </select>
               </div>
             </div>
@@ -304,7 +353,9 @@ export default function RecipesPage() {
               >
                 <Link href={`/recipes/${recipe.id}`}>
                   <div className="h-40 bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center relative">
-                    <ChefHat className="w-16 h-16 text-white/80 group-hover:scale-110 transition-transform" />
+                    <span className="text-6xl group-hover:scale-110 transition-transform select-none drop-shadow-lg">
+                      {getRecipeEmoji(recipe.tags || [])}
+                    </span>
                   </div>
                   <div className="p-5">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 pr-8">
