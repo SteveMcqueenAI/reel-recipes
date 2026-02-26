@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart } from "lucide-react";
+import { ChefHat, Clock, Users, Plus, Loader2, Search, X, ArrowUpDown, Heart, Tag } from "lucide-react";
 import FavoriteButton from "@/app/components/favorite-button";
 import ThemeToggle from "@/app/components/theme-toggle";
 
@@ -17,6 +17,7 @@ interface Recipe {
   source_url: string;
   created_at: string;
   is_favorite?: boolean;
+  tags?: string[];
 }
 
 export default function RecipesPage() {
@@ -26,6 +27,7 @@ export default function RecipesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRecipes();
@@ -45,6 +47,19 @@ export default function RecipesPage() {
     }
   };
 
+  // Collect all unique tags across recipes
+  const allTags = useMemo(() => {
+    const tagCounts = new Map<string, number>();
+    recipes.forEach((recipe) => {
+      (recipe.tags || []).forEach((tag) => {
+        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+      });
+    });
+    return Array.from(tagCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([tag]) => tag);
+  }, [recipes]);
+
   // Filter and sort recipes
   const filteredRecipes = useMemo(() => {
     let result = recipes;
@@ -53,6 +68,13 @@ export default function RecipesPage() {
     if (showFavoritesOnly) {
       result = result.filter((recipe) => recipe.is_favorite);
     }
+
+    // Filter by tag
+    if (selectedTag) {
+      result = result.filter((recipe) =>
+        (recipe.tags || []).includes(selectedTag)
+      );
+    }
     
     // Filter by search query
     if (searchQuery.trim()) {
@@ -60,7 +82,8 @@ export default function RecipesPage() {
       result = result.filter(
         (recipe) =>
           recipe.title.toLowerCase().includes(query) ||
-          recipe.description?.toLowerCase().includes(query)
+          recipe.description?.toLowerCase().includes(query) ||
+          (recipe.tags || []).some((tag) => tag.toLowerCase().includes(query))
       );
     }
     
@@ -72,7 +95,7 @@ export default function RecipesPage() {
     });
     
     return result;
-  }, [recipes, searchQuery, sortOrder, showFavoritesOnly]);
+  }, [recipes, searchQuery, sortOrder, showFavoritesOnly, selectedTag]);
 
   const handleFavoriteToggle = (recipeId: string, newState: boolean) => {
     setRecipes(recipes.map(r => 
@@ -162,6 +185,35 @@ export default function RecipesPage() {
           </div>
         )}
 
+        {/* Tag Filter Pills */}
+        {allTags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {selectedTag && (
+              <button
+                onClick={() => setSelectedTag(null)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <X className="w-3 h-3" />
+                Clear
+              </button>
+            )}
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors ${
+                  selectedTag === tag
+                    ? "bg-orange-500 text-white"
+                    : "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/40"
+                }`}
+              >
+                <Tag className="w-3 h-3" />
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
+
         {loading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
@@ -236,6 +288,23 @@ export default function RecipesPage() {
                     <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                       {recipe.description}
                     </p>
+                    {(recipe.tags || []).length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {(recipe.tags || []).slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded-full text-xs bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {(recipe.tags || []).length > 3 && (
+                          <span className="px-2 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                            +{(recipe.tags || []).length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                       {recipe.cook_time && (
                         <div className="flex items-center gap-1">

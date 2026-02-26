@@ -18,6 +18,7 @@ import {
   Printer,
   Plus,
   Minus,
+  Tag,
 } from "lucide-react";
 import ShareMenu from "@/app/components/share-menu";
 import FavoriteButton from "@/app/components/favorite-button";
@@ -36,6 +37,7 @@ interface Recipe {
   video_url: string;
   created_at: string;
   is_favorite?: boolean;
+  tags?: string[];
 }
 
 export default function RecipeDetailPage() {
@@ -163,6 +165,24 @@ export default function RecipeDetailPage() {
     if (!editForm) return;
     const newSteps = editForm.steps.filter((_, i) => i !== index);
     setEditForm({ ...editForm, steps: newSteps });
+  };
+
+  const [newTag, setNewTag] = useState("");
+
+  const addTag = () => {
+    if (!editForm || !newTag.trim()) return;
+    const tag = newTag.trim();
+    if ((editForm.tags || []).includes(tag)) {
+      setNewTag("");
+      return;
+    }
+    setEditForm({ ...editForm, tags: [...(editForm.tags || []), tag] });
+    setNewTag("");
+  };
+
+  const removeTag = (tag: string) => {
+    if (!editForm) return;
+    setEditForm({ ...editForm, tags: (editForm.tags || []).filter((t) => t !== tag) });
   };
 
   if (loading) {
@@ -296,6 +316,62 @@ export default function RecipeDetailPage() {
           ) : (
             <p className="text-gray-600 dark:text-gray-300 mb-6">{recipe.description}</p>
           )}
+
+          {/* Tags */}
+          {editing ? (
+            <div className="mb-4">
+              <div className="flex flex-wrap gap-2 mb-2">
+                {(editForm?.tags || []).map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"
+                  >
+                    <Tag className="w-3 h-3" />
+                    {tag}
+                    <button
+                      onClick={() => removeTag(tag)}
+                      className="ml-1 text-orange-400 hover:text-orange-600 dark:text-orange-500 dark:hover:text-orange-300"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addTag();
+                    }
+                  }}
+                  placeholder="Add a tag..."
+                  className="px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-full outline-none focus:border-orange-500"
+                />
+                <button
+                  onClick={addTag}
+                  className="text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ) : (recipe?.tags || []).length > 0 ? (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {(recipe.tags || []).map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"
+                >
+                  <Tag className="w-3 h-3" />
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
 
           <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
             {editing ? (

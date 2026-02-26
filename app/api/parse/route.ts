@@ -36,7 +36,8 @@ Extract the following information and return it as valid JSON:
   "steps": ["step 1", "step 2", "step 3"],
   "prep_time": "preparation time (e.g., '15 mins') or null",
   "cook_time": "cooking time (e.g., '30 mins') or null",
-  "servings": number or null
+  "servings": number or null,
+  "tags": ["category tags like 'Pasta', 'Dessert', 'Quick Meals', 'Vegetarian', etc."]
 }
 
 Guidelines:
@@ -45,6 +46,7 @@ Guidelines:
 - If prep_time or cook_time aren't explicitly mentioned, estimate based on the steps
 - If servings aren't mentioned, estimate based on ingredient quantities
 - If the transcript doesn't contain a recipe, create a best-guess title and description, and return empty arrays for ingredients and steps
+- For tags, include 2-5 relevant category tags. Use common categories like: Breakfast, Lunch, Dinner, Snack, Dessert, Appetizer, Pasta, Salad, Soup, Vegetarian, Vegan, Gluten-Free, Quick Meals, Comfort Food, Healthy, Asian, Italian, Mexican, Indian, BBQ, Baking, Seafood, Chicken, Beef, etc.
 
 Return ONLY the JSON object, no markdown formatting or explanation.`;
 
@@ -87,6 +89,7 @@ Return ONLY the JSON object, no markdown formatting or explanation.`;
       prep_time: recipe.prep_time || null,
       cook_time: recipe.cook_time || null,
       servings: typeof recipe.servings === "number" ? recipe.servings : null,
+      tags: Array.isArray(recipe.tags) ? recipe.tags : [],
     };
 
     return NextResponse.json({ recipe });

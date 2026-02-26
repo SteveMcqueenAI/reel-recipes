@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
         prep_time: recipe.prep_time,
         cook_time: recipe.cook_time,
         servings: recipe.servings,
+        tags: recipe.tags || [],
         source_url: sourceUrl,
         video_url: videoUrl,
       })

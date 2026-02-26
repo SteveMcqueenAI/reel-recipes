@@ -69,6 +69,7 @@ export async function PUT(
       prep_time: body.prep_time || null,
       cook_time: body.cook_time || null,
       servings: body.servings || null,
+      tags: body.tags || [],
     };
 
     const { data, error } = await getSupabase()
